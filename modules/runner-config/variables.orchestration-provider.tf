@@ -139,11 +139,6 @@ variable "orchestration_provider" {
     scale_set = optional(object({
       github = object({
         config_url = string
-        installation_id_ssm = object({
-          name        = string
-          arn         = string
-          kms_key_arn = optional(string, null)
-        })
         force_ghes = optional(bool, null)
       })
       name                 = string
