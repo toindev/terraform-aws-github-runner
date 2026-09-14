@@ -1,13 +1,10 @@
 variable "github_app" {
-  description = "GitHub App ID, base64-encoded private key, and installation ID SSM parameter."
+  description = "GitHub App ID, base64-encoded private key, and installation ID."
 
   type = object({
-    id         = string
-    key_base64 = string
-    installation_id_ssm = optional(object({
-      arn  = string
-      name = string
-    }))
+    id              = string
+    key_base64      = string
+    installation_id = optional(string, null)
   })
   sensitive = true
 }
@@ -16,19 +13,10 @@ variable "scale_set" {
   description = "GitHub Actions scale-set configuration."
 
   type = object({
-    config_url = string
-    installation_id_ssm = object({
-      arn  = string
-      name = string
-    })
-    name            = string
-    id              = number
-    runner_group_id = optional(number)
+    name = string
     container = optional(object({
       image = optional(string, null)
     }), {})
-    runner_owner              = string
-    runner_registration_level = string
   })
 }
 

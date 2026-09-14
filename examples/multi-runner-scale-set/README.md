@@ -19,21 +19,20 @@ instance types and AMI filter are under each lane's compute provider block.
 
 The scale-set lane uses `orchestration_provider.scale_set`. Its controller
 network is configured under the global scale-set block and its GitHub
-installation ID is read from the SSM parameter described by `var.github_app`.
+installation ID is provided by `var.github_app`.
 
 Configure the GitHub App variables before applying:
 
 ```bash
 terraform init
 terraform apply \
-  -var='github_app={id="123456",key_base64="...",installation_id_ssm={name="/github/scale-set/installation-id",arn="arn:aws:ssm:eu-west-1:123456789012:parameter/github/scale-set/installation-id"}}' \
-  -var='scale_set={config_url="https://github.com/example" installation_id_ssm={name="/github/scale-set/installation-id",arn="arn:aws:ssm:eu-west-1:123456789012:parameter/github/scale-set/installation-id"} name="linux-scale-set" id=123 container={image="ghcr.io/github-aws-runners/terraform-aws-github-runner-scale-set-service@sha256:<release-digest>"} runner_owner="example-org" runner_registration_level="organization"}'
+  -var='github_app={id="123456",key_base64="...",installation_id="123456789"}' \
+  -var='scale_set={name="linux-scale-set",container={image="ghcr.io/github-aws-runners/terraform-aws-github-runner-scale-set-service@sha256:<release-digest>"}}'
 ```
 
 The `github_app` value is sensitive and should be supplied through a secure
 variable source in real deployments rather than committed to configuration.
-The scale-set installation ID must already exist in the referenced SSM
-parameter and the GitHub App must be installed for the configured URL.
+The GitHub App must be installed for the configured GitHub account.
 
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
@@ -72,9 +71,9 @@ parameter and the GitHub App must be installed for the configured URL.
 | <a name="input_ami"></a> [ami](#input\_ami) | Optional AMI configuration keyed by runner lane. | <pre>map(object({<br/>    filter = optional(map(list(string)), { state = ["available"] })<br/>    owners = optional(list(string), ["amazon"])<br/>    id_ssm_parameter = optional(object({<br/>      arn = string<br/>    }), null)<br/>    kms_key = optional(object({<br/>      arn = string<br/>    }), null)<br/>  }))</pre> | `{}` | no |
 | <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | AWS region to deploy to. | `string` | `"eu-west-1"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name, used as prefix. | `string` | `null` | no |
-| <a name="input_github_app"></a> [github\_app](#input\_github\_app) | GitHub App ID, base64-encoded private key, and installation ID SSM parameter. | <pre>object({<br/>    id         = string<br/>    key_base64 = string<br/>    installation_id_ssm = optional(object({<br/>      arn  = string<br/>      name = string<br/>    }))<br/>  })</pre> | n/a | yes |
+| <a name="input_github_app"></a> [github\_app](#input\_github\_app) | GitHub App ID, base64-encoded private key, and installation ID. | <pre>object({<br/>    id              = string<br/>    key_base64      = string<br/>    installation_id = optional(string, null)<br/>  })</pre> | n/a | yes |
 | <a name="input_runner_binaries_enabled"></a> [runner\_binaries\_enabled](#input\_runner\_binaries\_enabled) | Whether runner binary synchronization is enabled. | `bool` | `true` | no |
-| <a name="input_scale_set"></a> [scale\_set](#input\_scale\_set) | GitHub Actions scale-set configuration. | <pre>object({<br/>    config_url = string<br/>    installation_id_ssm = object({<br/>      arn  = string<br/>      name = string<br/>    })<br/>    name            = string<br/>    id              = number<br/>    runner_group_id = optional(number)<br/>    container = optional(object({<br/>      image = optional(string, null)<br/>    }), {})<br/>    runner_owner              = string<br/>    runner_registration_level = string<br/>  })</pre> | n/a | yes |
+| <a name="input_scale_set"></a> [scale\_set](#input\_scale\_set) | GitHub Actions scale-set configuration. | <pre>object({<br/>    name = string<br/>    container = optional(object({<br/>      image = optional(string, null)<br/>    }), {})<br/>  })</pre> | n/a | yes |
 
 ## Outputs
 

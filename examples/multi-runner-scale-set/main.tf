@@ -36,10 +36,10 @@ module "runners" {
 
   global_config_github = {
     app = {
-      key_base64          = var.github_app.key_base64
-      id                  = var.github_app.id
-      installation_id_ssm = var.github_app.installation_id_ssm
-      webhook_secret      = random_id.random.hex
+      key_base64      = var.github_app.key_base64
+      id              = var.github_app.id
+      installation_id = var.github_app.installation_id
+      webhook_secret  = random_id.random.hex
     }
   }
 
@@ -148,18 +148,12 @@ module "runners" {
       }
       orchestration_provider = {
         scale_set = {
-          github = {
-            config_url                = var.scale_set.config_url
-            installation_id_ssm       = var.scale_set.installation_id_ssm
-            runner_owner              = var.scale_set.runner_owner
-            runner_registration_level = var.scale_set.runner_registration_level
+          name = var.scale_set.name
+          runner = {
+            min_runners          = 0
+            max_runners          = 10
+            boot_time_in_minutes = 10
           }
-          name            = var.scale_set.name
-          id              = var.scale_set.id
-          runner_group_id = var.scale_set.runner_group_id
-          min_runners     = 0
-          max_runners     = 10
-          work_folder     = "_work/scale-set"
         }
       }
       compute_provider = {
